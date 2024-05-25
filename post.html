@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Cursos</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+  </head>
+  <body>
+    <div class="container">
+      <div class="card-deck" id="card-deck"></div>
+      <form id="form-curso">
+        <div class="form-group">
+          <label for="nombrecurso">Nombre del curso:</label>
+          <input type="text" class="form-control" id="nombrecurso" required>
+        </div>
+        <div class="form-group">
+          <label for="duracion">Duración del curso (horas):</label>
+          <input type="number" class="form-control" id="duracion" required>
+        </div>
+        <div class="form-group">
+          <label for="valor">Valor del curso:</label>
+          <input type="number" class="form-control" id="valor" required>
+        </div>
+        <div class="form-group">
+          <label for="imagen">Imagen del curso:</label>
+          <input type="file" class="form-control" id="imagen" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Agregar curso</button>
+      </form>
+    </div>
+
+    <script>
+      // Función que obtiene los datos de la API y crea las cards
+      function obtenerDatos() {
+        fetch('https://cursos-d52c4-default-rtdb.firebaseio.com/cursos.json')
+          .then(response => response.json())
+          .then(data => {
+            const cardDeck = document.getElementById('card-deck');
+            cardDeck.innerHTML = '';
+            for (let key in data) {
+              const objeto = data[key];
+
+              const card = document.createElement('div');
+              card.classList.add('card');
+
+              const imagen = document.createElement('img');
+              imagen.classList.add('card-img-top');
+              imagen.src = objeto.imagen;
+
+              const cardBody = document.createElement('div');
+              cardBody.classList.add('card-body');
+
+              const titulo = document.createElement('h5');
+              titulo.classList.add('card-title');
+              titulo.textContent = objeto.nombrecurso;
+
+              const duracion = document.createElement('p');
+              duracion.classList.add('card-text');
+              duracion.textContent = 'Duración: ' + objeto.duracion + ' horas';
+
+              const valor = document.createElement('p');
+              valor.classList.add('card-text');
+              valor.textContent = 'Valor: $' + objeto.valor;
+
+              cardBody.appendChild(titulo);
+              cardBody.appendChild(duracion);
+              cardBody.appendChild(valor);
+
+              card.appendChild(imagen);
+              card.appendChild(cardBody);
+
+              cardDeck.appendChild(card);
+            }
+          });
+      }
+
+      // Ejecutar la función obtenerDatos al cargar la página
+      obtenerDatos();
+
+      // Agregar un evento al formulario para enviar los datos a la API
+      const formCurso = document.getElementById('form-curso');
+      formCurso.addEventListener('submit', (event) => {
+        event.preventDefault(); // Evita que la página se recargue al enviar el formulario
+
+        // Obtener la imagen seleccionada
+        const imagenInput = document.getElementById('imagen');
+        const imagenFile = imagenInput.files[0];
+        const reader = new FileReader();
+
+        // Convertir la imagen a base64
+        reader.onload = (event) => {
+  const imagenBase64 = event.target.result;
+
+  // Obtener los valores del formulario
+  const nombreCurso = document.getElementById('nombrecurso').value;
+  const duracion = document.getElementById('duracion').value;
+  const valor = document.getElementById('valor').value;
+
+  // Enviar los datos a la API
+  fetch('https://cursos-d52c4-default-rtdb.firebaseio.com/cursos.json', {
+    method: 'POST',
+    body: JSON.stringify({
+      nombrecurso: nombreCurso,
+      duracion: duracion,
+      valor: valor,
+      imagen: imagenBase64
+    })
+  })
+  .then(response => {
+    alert('El curso ha sido agregado con éxito');
+    obtenerDatos(); // Actualizar la lista de cursos
+  })
+  .catch(error => console.error(error));
+};
+
+reader.readAsDataURL(imagenFile);
+});
+</script>
+</body>
+</html>

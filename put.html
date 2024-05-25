@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Cursos</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+</head>
+<body>
+  <div class="container">
+    <div class="card-deck" id="card-deck"></div>
+  </div>
+
+  <script>
+    // Función que obtiene los datos de la API y crea las cards
+    function obtenerDatos() {
+      fetch('https://cursos-d52c4-default-rtdb.firebaseio.com/cursos.json')
+      .then(response => response.json())
+      .then(data => {
+        const cardDeck = document.getElementById('card-deck');
+        cardDeck.innerHTML = '';
+        for (let key in data) {
+          const objeto = data[key];
+
+          const card = document.createElement('div');
+          card.classList.add('card');
+
+          const imagen = document.createElement('img');
+          imagen.classList.add('card-img-top');
+          imagen.src = objeto.imagen;
+
+          const cardBody = document.createElement('div');
+          cardBody.classList.add('card-body');
+
+          const titulo = document.createElement('h5');
+          titulo.classList.add('card-title');
+          titulo.textContent = objeto.nombrecurso;
+
+          const duracion = document.createElement('p');
+          duracion.classList.add('card-text');
+          duracion.textContent = 'Duración: ' + objeto.duracion + ' horas';
+
+          const valor = document.createElement('p');
+          valor.classList.add('card-text');
+          valor.textContent = 'Valor: $' + objeto.valor;
+
+          // Agregar botones para modificar los campos
+          const btnNombre = document.createElement('button');
+          btnNombre.classList.add('btn', 'btn-primary', 'mb-2');
+          btnNombre.textContent = 'Modificar nombre';
+          btnNombre.addEventListener('click', () => {
+            const nuevoNombre = prompt('Ingrese el nuevo nombre del curso:', objeto.nombrecurso);
+            if (nuevoNombre) {
+              objeto.nombrecurso = nuevoNombre;
+              actualizarDatos(objeto, key);
+            }
+          });
+
+          const btnDuracion = document.createElement('button');
+          btnDuracion.classList.add('btn', 'btn-primary', 'mb-2');
+          btnDuracion.textContent = 'Modificar duración';
+          btnDuracion.addEventListener('click', () => {
+            const nuevaDuracion = prompt('Ingrese la nueva duración del curso:', objeto.duracion);
+            if (nuevaDuracion) {
+              objeto.duracion = nuevaDuracion;
+              actualizarDatos(objeto, key);
+            }
+          });
+
+          const btnValor = document.createElement('button');
+          btnValor.classList.add('btn', 'btn-primary', 'mb-2');
+          btnValor.textContent = 'Modificar valor';
+          btnValor.addEventListener('click', () => {
+            const nuevoValor = prompt('Ingrese el nuevo valor del curso:', objeto.valor);
+            if (nuevoValor) {
+              objeto.valor = nuevoValor;
+              actualizarDatos(objeto, key);
+            }
+          });
+
+          const btnImagen = document.createElement('button');
+          btnImagen.classList.add('btn', 'btn-primary', 'mb-2');
+          btnImagen.textContent = 'Modificar imagen';
+          btnImagen.addEventListener('click', () => {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = 'image/*';
+            input.addEventListener('change', () => {
+              const fileReader = new FileReader();
+              fileReader.readAsDataURL(input.files[0]);
+              fileReader.onload = () => {
+                objeto.imagen = fileReader.result;
+                actualizarDatos(objeto, key);
+              }
+            });
+            input.click();
+          });
+          cardBody.appendChild(titulo);
+          cardBody.appendChild(duracion);
+          cardBody.appendChild(valor);
+          cardBody.appendChild(btnNombre);
+          cardBody.appendChild(document.createElement('br'));
+          cardBody.appendChild(btnDuracion);
+          cardBody.appendChild(document.createElement('br'));
+          cardBody.appendChild(btnValor);
+          cardBody.appendChild(document.createElement('br'));
+          cardBody.appendChild(btnImagen);
+
+          card.appendChild(imagen);
+          card.appendChild(cardBody);
+
+          cardDeck.appendChild(card);
+        }
+      })
+      .catch(error => console.error(error));
+    }
+
+    // Función que actualiza los datos en la API
+    function actualizarDatos(objeto, key) {
+      fetch(`https://cursos-d52c4-default-rtdb.firebaseio.com/cursos/${key}.json`, {
+        method: 'PUT',
+        body: JSON.stringify(objeto)
+      })
+      .then(response => {
+        if (response.ok) {
+          alert('Datos actualizados correctamente');
+           location.reload();
+        } else {
+          throw new Error('Error al actualizar los datos');
+        }
+      })
+      .catch(error => console.error(error));
+    }
+
+    obtenerDatos();
+
+  </script>
+</body>
+</html>
