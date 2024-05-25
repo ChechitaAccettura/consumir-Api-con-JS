@@ -4,41 +4,13 @@
     <meta charset="UTF-8">
     <title>Cursos</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
-    <style>
-      .card-deck {
-        margin-top: 20px;
-      }
+    <link rel="stylesheet" href="main.css">
 
-    </style>
-<style>
-      body {
-        background-color: #000;
-      }
-      .card-deck {
-        margin-top: 20px;
-      }
-      .card {
-        background-color: #fff;
-        color: #000;
-        border-radius: 10px;
-        box-shadow: 0px 0px 10px #000;
-        transition: all 0.3s ease-in-out;
-      }
-      .card:hover {
-        transform: scale(1.05);
-        box-shadow: 0px 0px 20px #000;
-      }
-      .card-title {
-        font-size: 24px;
-        font-weight: bold;
-      }
-      .card-text {
-        font-size: 18px;
-      }
-    </style>
+
   </head>
   <body>
     <div class="container">
+      <h3>Mirá todas estas opciones</h3>     
       <div class="card-deck" id="card-deck"></div>
     </div>
 
@@ -46,14 +18,14 @@
       // Función que obtiene los datos de la API y crea las cards
       function obtenerDatos() {
         // Utilizamos la función fetch para obtener los datos de la API , La función fetch es una API web que permite realizar solicitudes HTTP asincrónicas, lo que significa que puede solicitar datos de recursos en línea sin tener que recargar la página web completa.
-        fetch('https://cursos-d52c4-default-rtdb.firebaseio.com/cursos.json')
+        fetch('/JS/my-first-project-con-potrero-default-rtdb-cursos-export.json')
         // El navegador enviará una solicitud HTTP GET al servidor que aloja la API para obtener los datos.
         //Luego, la respuesta a esa solicitud se pasa a la función .then(),se crea el objeto response, que guarda la PROMESA Y donde se llama a .json() para convertir los datos en formato JSON a un objeto JavaScript.
           .then(response => response.json())
           .then(data => { //Recibe esos datos y crea la variable data que va a contener todos los datos en formato JSON que se obtienen utilizando la función fetch.
             // Obtener el elemento contenedor para las cards
             const cardDeck = document.getElementById('card-deck');
-            cardDeck.innerHTML = ''; //limpia todo lo que hay en la card anterior(esto hace que siempre que se ejecute la funcion la card cargue de nuevo y no muestre info que ya tenga cargado)
+            cardDeck.innerHTML = '';  // limpia todo lo que hay en la card anterior(esto hace que siempre que se ejecute la funcion la card cargue de nuevo y no muestre info que ya tenga cargado)
             // Iterar sobre los datos y crear una card para cada objeto
             for (let key in data) {  //La variable data contiene los datos en formato JSON que se obtienen utilizando la función fetch.
               const objeto = data[key]; //se utiliza para recorrer los objetos dentro de data. En cada iteración, la variable key tomará el valor de una de las propiedades de data. La variable objeto se utiliza para almacenar el objeto que se encuentra en la posición key de data.
@@ -71,7 +43,7 @@
 
               const titulo = document.createElement('h5');
               titulo.classList.add('card-title');
-              titulo.textContent = objeto["nombrecurso"];
+              titulo.textContent = objeto["nombre"];
 
               const duracion = document.createElement('p');
               duracion.classList.add('card-text');
@@ -81,10 +53,15 @@
               valor.classList.add('card-text');
               valor.textContent = 'Valor: $' + objeto.valor;
 
+              const descripcion = document.createElement('p');
+              valor.classList.add('card-text');
+              valor.textContent = 'Descripción ' + objeto.descripcion;
+
               // Agregar los elementos a la card, crea los elementos HTML que conforman una tarjeta y los agrega en el orden correspondiente, para finalmente agregar la tarjeta completa al contenedor de tarjetas.
               cardBody.appendChild(titulo);
               cardBody.appendChild(duracion);
               cardBody.appendChild(valor);
+              cardBody.appendChild(descripcion);
 
               card.appendChild(imagen);
               card.appendChild(cardBody);
